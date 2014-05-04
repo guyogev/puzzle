@@ -16,15 +16,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
  * 
  * Tiles centers on screen with background
  * */
-public class Board {
+public class Board{
 	private static Board board;
 	private static Table bgTable, cellsTable;
 	private static ArrayList<Tile> tileBatch;
-	private static final int PADDING = 20;
 
 	private Board() {
 	}
-
+	
+	
 	/** board background getter*/
 	public Table getBgTable() {
 		return bgTable;
@@ -54,10 +54,10 @@ public class Board {
 	public static Board getBoard(int h, int w, int c) {
 		if (null == board)
 			board = new Board();
-		int tileW = Assets.boardSize / w;
-		int tileH = Assets.boardSize / h;
-		int bgW = Assets.boardSize + PADDING;
-		int bgH = Assets.boardSize + PADDING;
+		float tileW = Assets.board_cells_Width / w;
+		float tileH = Assets.board_cells_Heigth / h;
+		float bgW = Assets.board_Bg_Width;
+		float bgH = Assets.board_Bg_Heigth;
 	
 		// board background
 		bgTable = new Table();
@@ -94,6 +94,13 @@ public class Board {
 			batch.add(new GreenTile());
 		Collections.shuffle(batch);
 		return batch;
+	}
+
+	public void reset() {
+		for (Tile t : tileBatch){
+			t.addAction(Actions.color(t.visibleColor,.3f));
+			t.setTouchable(Touchable.enabled);
+		}
 	}
 
 }

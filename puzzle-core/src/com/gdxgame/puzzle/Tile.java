@@ -21,12 +21,12 @@ public abstract class Tile extends Button {
 				addAction(Actions.color(hiddenColor, .3f));
 				setTouchable(Touchable.disabled);
 				if (hiddenColor == Assets.hiddenColor_green) {
-					Hud.updateHud(true);
-					Assets.correct.play();
+					TopHud.updateHud(true);
+					Assets.correct.play(Assets.correctVolume);
 				}
 				else{
-					Hud.updateHud(false);
-					Assets.wrong.play();
+					TopHud.updateHud(false);
+					Assets.wrong.play(Assets.wrongVolume);
 				}
 				
 				return true;

@@ -6,19 +6,40 @@ package com.gdxgame.puzzle;
  * Level raw data
  */
 public class Level {
-	private static Level level = new Level();
+	private static Level level;
 	private static int levelNumber, boardHeight, boardWidth, coloredTiles;
 
 	private Level() {
+		reset();
+	}
+
+	void reset() {
 		levelNumber = 0;
 		boardHeight = 2;
 		boardWidth = 2;
 		coloredTiles = 0;
 	}
 
-	/**Creates nect level*/
-	public static Level getLevel() {
-		levelNumber++;
+	public static int getLevelNumber() {
+		return levelNumber;
+	}
+
+	public int getBoardHeight() {
+		return boardHeight;
+	}
+
+	public int getBoardWidth() {
+		return boardWidth;
+	}
+
+	public int getColoredTiles() {
+		return coloredTiles;
+	}
+
+	public static Level next() {
+		if (level == null)
+			level = new Level();
+ 		levelNumber++;
 		if ((double)coloredTiles / (boardHeight * boardWidth) < 0.5)
 			coloredTiles++;
 		else {
@@ -31,22 +52,6 @@ public class Level {
 			coloredTiles = Math.max(1, boardHeight*boardWidth/8);
 		}
 		return level;
-	}
-
-	public static int getLevelNumber() {
-		return levelNumber;
-	}
-
-	public static int getBoardHeight() {
-		return boardHeight;
-	}
-
-	public static int getBoardWidth() {
-		return boardWidth;
-	}
-
-	public static int getColoredTiles() {
-		return coloredTiles;
 	}
 
 }

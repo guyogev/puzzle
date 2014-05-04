@@ -7,7 +7,7 @@ public class Puzzle extends Game {
 	@Override
 	public void create() {
 		Assets.load();
-		setScreen(new MenuScreen(this));
+		setScreen(new PlayScreen(this));
 		
 	}
 	

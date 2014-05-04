@@ -9,9 +9,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 
 public class MenuScreen extends AbstractScreen {
-	
+
 	Table layout;
-	
+
 	public MenuScreen(Puzzle puzzle) {
 		game = puzzle;
 		stage = new Stage();
@@ -19,8 +19,8 @@ public class MenuScreen extends AbstractScreen {
 		layout = new Table();
 		layout.setFillParent(true);
 		stage.addActor(layout);
-		
-		TextButton startButtom = new TextButton("Start",Assets.defultSkin);
+
+		TextButton startButtom = new TextButton("Start", Assets.defultSkin);
 		startButtom.addListener(new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y,
 					int pointer, int button) {
@@ -32,10 +32,9 @@ public class MenuScreen extends AbstractScreen {
 					int pointer, int button) {
 			}
 		});
-		
-		layout.add(startButtom);
-		
-		
+
+		layout.add(startButtom).width(6*Assets.w_unit);
+
 	}
 
 	@Override

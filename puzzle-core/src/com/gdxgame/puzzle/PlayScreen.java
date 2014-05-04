@@ -3,45 +3,34 @@ package com.gdxgame.puzzle;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 
 public class PlayScreen extends AbstractScreen {
-	Level level;
-	Board board;
-	Hud hud;
+
+	private Level level;
+	private Board board;
+	private TopHud topHud;
+	private BottomHud bottomHud;
 	// Arranges hud & buttons
 	private Table screenLayout;
 	// Holds only the board object.
 	private Stage boardStage;
-	private TextButton showButton, nextLevelButton;
+	private float FXdelta = .3f;
+	private MenuWindow menuWindow;
 
 	public PlayScreen(Puzzle puzzle) {
 		game = puzzle;
 		stage = new Stage();
-		boardStage = new Stage();
-		InputMultiplexer inputMultiplexer = new InputMultiplexer();
-		inputMultiplexer.addProcessor(stage);
-		inputMultiplexer.addProcessor(boardStage);
-		Gdx.input.setInputProcessor(inputMultiplexer);
-
-		screenLayout = new Table();
-		screenLayout.setFillParent(true);
+		boardStage = new Stage(stage.getViewport(), stage.getSpriteBatch());
+		initInputProcessing();
+		initScreenLayout();
 
 		Assets.music.setLooping(true);
-		// Assets.music.play();
+		Assets.music.play();
 
-		hud = new Hud();
-		screenLayout.add(hud).expand().top().left().row();
-
-		buttonsSetup();
-
+		// begin first level
 		nextLevelSetup();
 	}
 
@@ -50,90 +39,120 @@ public class PlayScreen extends AbstractScreen {
 		Gdx.gl.glClearColor(.1f, .1f, .1f, .5f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		gameLoop();
-		stage.act(Gdx.graphics.getDeltaTime());
 		boardStage.act(Gdx.graphics.getDeltaTime());
-		stage.draw();
 		boardStage.draw();
-
+		stage.act(Gdx.graphics.getDeltaTime());
+		stage.draw();
+		Table.drawDebug(stage);
 	}
 
 	@Override
 	public void dispose() {
+		boardStage.dispose();
 		stage.dispose();
 	}
 
-	/** reset the board with new level */
+	@Override
+	public void resize(int width, int height) {
+		stage.getViewport().update(width, height, true);
+		boardStage.getViewport().update(width, height, true);
+	}
+
+	/** create & initialize input processors */
+	private void initInputProcessing() {
+		InputMultiplexer inputMultiplexer = new InputMultiplexer();
+		inputMultiplexer.addProcessor(stage);
+		inputMultiplexer.addProcessor(boardStage);
+		Gdx.input.setInputProcessor(inputMultiplexer);
+	}
+
+	/** create stage layout & fill with UI objects */
+	private void initScreenLayout() {
+		screenLayout = new Table();
+		screenLayout.setFillParent(true);
+		screenLayout.align(Align.top);
+
+		topHud = TopHud.getHud();
+		screenLayout.add(topHud).height(Assets.hudHeigth)
+				.width(Assets.screenWidth).top().row();
+
+		menuWindow = new MenuWindow();
+		screenLayout.add(menuWindow).height(Assets.board_Bg_Heigth)
+				.width(Assets.screenWidth).row();
+		FX.hideActor(menuWindow, 0);
+
+		bottomHud = BottomHud.getBottomHud();
+		screenLayout.add(bottomHud).height(Assets.bottomTableHeigth)
+				.width(Assets.screenWidth).pad(Assets.h_unit / 4).row();
+
+		stage.addActor(screenLayout);
+	}
+
+	/** set the board with new level */
 	private void nextLevelSetup() {
 		boardStage.clear();
-		level = Level.getLevel();
-		board = Board.getBoard(Level.getBoardHeight(), Level.getBoardWidth(),
-				Level.getColoredTiles());
+		level = Level.next();
+		board = Board.getBoard(level.getBoardHeight(), level.getBoardWidth(),
+				level.getColoredTiles());
 		boardStage.addActor(board.getBgTable());
 		boardStage.addActor(board.getCellsTable());
-		Hud.nextLevelSetup(Level.getColoredTiles(), Level.getLevelNumber());
-		showButton(showButton);
-		hideButton(nextLevelButton);
-
-	}
-	
-	/** create UI buttons*/
-	private void buttonsSetup() {
-		showButton = new TextButton("Show", Assets.defultSkin);
-		showButton.setSize(2 * Assets.w_unit, Assets.w_unit);
-		showButton.addListener(new InputListener() {
-			public boolean touchDown(InputEvent event, float x, float y,
-					int pointer, int button) {
-				hideButton(showButton);
-				board.showTiles();
-				return true;
-			}
-
-			public void touchUp(InputEvent event, float x, float y,
-					int pointer, int button) {
-			}
-		});
-
-		nextLevelButton = new TextButton("Next Level", Assets.defultSkin);
-		nextLevelButton.setSize(2 * Assets.w_unit, Assets.w_unit);
-		nextLevelButton.addListener(new InputListener() {
-			public boolean touchDown(InputEvent event, float x, float y,
-					int pointer, int button) {
-				hideButton(nextLevelButton);
-				nextLevelSetup();
-				return true;
-			}
-
-			public void touchUp(InputEvent event, float x, float y,
-					int pointer, int button) {
-			}
-		});
-		screenLayout.add(showButton).left().padLeft(Assets.w_unit / 4)
-				.width(3 * Assets.w_unit).padBottom(1.5f * Assets.w_unit)
-				.height(1.5f * Assets.w_unit);
-		screenLayout.add(nextLevelButton).left().padRight(Assets.w_unit / 4)
-				.padBottom(1.5f * Assets.w_unit).width(3 * Assets.w_unit)
-				.height(1.5f * Assets.w_unit);
-		stage.addActor(screenLayout);
-
-	}
-	
-	/** Button fade out effect*/
-	private void hideButton(Button b) {
-		b.setTouchable(Touchable.disabled);
-		b.addAction(Actions.fadeOut(.3f));
+		topHud.nextLevelSetup(level.getColoredTiles(), Level.getLevelNumber());
+		bottomHud.showPatternButton();
 	}
 
-	/** Button fade in effect*/
-	private void showButton(Button b) {
-		b.setTouchable(Touchable.enabled);
-		b.addAction(Actions.fadeIn(.3f));
-	}
-
-	/** Main game loop*/
+	/** Main game loop */
 	private void gameLoop() {
-		if (Hud.getTilesLeft() == 0) {
-			showButton(nextLevelButton);
+		//level finished
+		if (topHud.getTilesLeft() == 0 && !bottomHud.nextLevelButtonIsVisible())
+			bottomHud.showNextLevelButton();
+		switch (bottomHud.getchoice()) {
+		case 1:
+			board.showTiles();
+			bottomHud.resetButtonPressed();
+			break;
+		case 2:
+			nextLevelSetup();
+			bottomHud.resetButtonPressed();
+		default:
+			break;
 		}
+		//game over
+		if (topHud.getStrikesLeft() <= 0) {
+			if (!menuWindow.isTouchable())
+				FX.showActor(menuWindow, FXdelta);
+			int choice = menuWindow.getchoice();
+			switch (choice) {
+			case 1:
+				restartLevel();
+				break;
+			case 2:
+				restartGame();
+			case 3:
+				backTMainMenu();
+			default:
+				break;
+			}
+		}
+	}
+
+	private void backTMainMenu() {
+		game.setScreen(new MenuScreen(game));
+		// dispose();
+	}
+
+	private void restartGame() {
+		level.reset();
+		topHud.resetHud();
+		nextLevelSetup();
+		menuWindow.resetChoice();
+	}
+
+	private void restartLevel() {
+		board.reset();
+		bottomHud.showPatternButton();
+		topHud.resetStrikesLeft(1);
+		topHud.nextLevelSetup(level.getColoredTiles(), Level.getLevelNumber());
+		menuWindow.resetChoice();
 	}
 
 }
