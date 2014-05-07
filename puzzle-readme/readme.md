@@ -7,7 +7,7 @@ current version available at https://dl.dropboxusercontent.com/u/6869994/puzzle-
 ##Design
 -------
 OOD.
-Singleton pattern.
+some classes use Singleton pattern.
 
 I make use of the LibGDX game development framework.
 Under the main folder you see 4 projects.

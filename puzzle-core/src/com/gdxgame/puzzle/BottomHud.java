@@ -1,5 +1,6 @@
 package com.gdxgame.puzzle;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -22,13 +23,15 @@ public class BottomHud extends Table {
 	private HudChoice buttonPressedCode;
 	private TextButton showPatternButton, nextLevelButton;
 	private Button colorButton;
+	private int colorIndex;
 
 	private BottomHud() {
 		super();// .debug();
 		align(Align.top);
 		buttonPressedCode = HudChoice.undecided;
+		colorIndex = 0;
 		// showPatternButton
-		showPatternButton = new TextButton("Show Pattern", Assets.defultSkin);
+		showPatternButton = new TextButton("Show Pattern", Assets.defaultSkin);
 		showPatternButton.addListener(new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y,
 					int pointer, int button) {
@@ -42,7 +45,7 @@ public class BottomHud extends Table {
 			}
 		});
 		// nextLevelButton
-		nextLevelButton = new TextButton("Next Level", Assets.defultSkin);
+		nextLevelButton = new TextButton("Next Level", Assets.defaultSkin);
 		nextLevelButton.addListener(new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y,
 					int pointer, int button) {
@@ -56,11 +59,13 @@ public class BottomHud extends Table {
 			}
 		});
 		// colorButton
-		colorButton = new Button(Assets.defultSkin);
+		colorButton = new Button(Assets.defaultSkin);
+		colorButton.setColor(Assets.hiddenColors.get(colorIndex));
 		colorButton.addListener(new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y,
 					int pointer, int button) {
-				colorButton.setColor(Assets.hiddColor_red);
+				colorIndex = (colorIndex + 1) % Assets.colorLimit;
+				colorButton.setColor(Assets.hiddenColors.get(colorIndex));
 				return true;
 			}
 
@@ -127,5 +132,9 @@ public class BottomHud extends Table {
 
 	public boolean showPatternButtonIsVisible() {
 		return nextLevelButton.isTouchable();
+	}
+
+	public Color getChosenColor() {
+		return colorButton.getColor();
 	}
 }

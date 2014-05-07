@@ -19,12 +19,14 @@ public class MenuScreen extends AbstractScreen {
 		layout = new Table();
 		layout.setFillParent(true);
 		stage.addActor(layout);
+		game.playScreen = new PlayScreen(game);
 
-		TextButton startButtom = new TextButton("Start", Assets.defultSkin);
-		startButtom.addListener(new InputListener() {
+		TextButton easy = new TextButton("easy (one color)",Assets.defaultSkin);
+		easy.addListener(new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y,
 					int pointer, int button) {
-				game.setScreen(new PlayScreen(game));
+				Assets.colorLimit = 1;
+				game.setScreen(game.playScreen);
 				return true;
 			}
 
@@ -33,7 +35,40 @@ public class MenuScreen extends AbstractScreen {
 			}
 		});
 
-		layout.add(startButtom).width(6*Assets.w_unit);
+		TextButton medium = new TextButton("medium (two colors)", Assets.defaultSkin);
+		medium.addListener(new InputListener() {
+			public boolean touchDown(InputEvent event, float x, float y,
+					int pointer, int button) {
+				Assets.colorLimit = 2;
+				game.setScreen(game.playScreen);
+				return true;
+			}
+
+			public void touchUp(InputEvent event, float x, float y,
+					int pointer, int button) {
+			}
+		});
+
+		TextButton hard = new TextButton("hard (three colors)", Assets.defaultSkin);
+		hard.addListener(new InputListener() {
+			public boolean touchDown(InputEvent event, float x, float y,
+					int pointer, int button) {
+				Assets.colorLimit = 3;
+				game.setScreen(game.playScreen);
+				return true;
+			}
+
+			public void touchUp(InputEvent event, float x, float y,
+					int pointer, int button) {
+			}
+		});
+
+		layout.add(easy).width(6 * Assets.w_unit).height(Assets.h_unit)
+				.pad(Assets.h_unit / 4).row();
+		layout.add(medium).width(6 * Assets.w_unit).height(Assets.h_unit)
+				.pad(Assets.h_unit / 4).row();
+		layout.add(hard).width(6 * Assets.w_unit).height(Assets.h_unit)
+				.pad(Assets.h_unit / 4).row();
 
 	}
 

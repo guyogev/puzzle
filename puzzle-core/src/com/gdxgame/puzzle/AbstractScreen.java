@@ -1,16 +1,14 @@
 package com.gdxgame.puzzle;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
-/*
- * flowing MVC pattern, screens are the game View.
- * screen will extract data from the game modal and display it.
- */
+
 public abstract class AbstractScreen implements Screen {
 	// screen hold pointer to the Game object
 	Puzzle game;
-	public static Stage stage;
+	Stage stage;
 
 	@Override
 	public abstract void render(float delta);
@@ -22,7 +20,7 @@ public abstract class AbstractScreen implements Screen {
 
 	@Override
 	public void show() {
-		// TODO Auto-generated method stub
+		Gdx.input.setInputProcessor(stage);
 	}
 
 	@Override

@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 
+/**play screen menu & options*/
 public class MenuWindow extends Window {
 
 	private enum RestartChoice {
@@ -19,7 +20,7 @@ public class MenuWindow extends Window {
 	private Table layout;
 
 	public MenuWindow() {
-		super("Menu", Assets.defultSkin);
+		super("Menu", Assets.defaultSkin);
 		setSize(Assets.board_cells_Width, Assets.board_cells_Heigth);
 
 		layout = new Table();// .debug();
@@ -28,10 +29,10 @@ public class MenuWindow extends Window {
 
 		choice = RestartChoice.undecided;
 
-		buttonSetup();
+		createButtons();
 
 		layout.add(mainMenu).width(6 * Assets.w_unit).height(Assets.h_unit)
-		.padBottom(Assets.h_unit / 4).colspan(6).row();
+				.padBottom(Assets.h_unit / 4).colspan(6).row();
 		layout.add(tryAgain).width(6 * Assets.w_unit).height(Assets.h_unit)
 				.padBottom(Assets.h_unit / 4).colspan(6).row();
 		layout.add(restart).width(6 * Assets.w_unit).height(Assets.h_unit)
@@ -41,8 +42,8 @@ public class MenuWindow extends Window {
 
 	}
 
-	private void buttonSetup() {
-		mainMenu = new TextButton("Back To Main Menu", Assets.defultSkin);
+	private void createButtons() {
+		mainMenu = new TextButton("Back To Main Menu", Assets.defaultSkin);
 		mainMenu.addListener(new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y,
 					int pointer, int button) {
@@ -55,7 +56,7 @@ public class MenuWindow extends Window {
 			}
 
 		});
-		tryAgain = new TextButton("Try Level Again", Assets.defultSkin);
+		tryAgain = new TextButton("Try Level Again", Assets.defaultSkin);
 		tryAgain.addListener(new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y,
 					int pointer, int button) {
@@ -68,7 +69,7 @@ public class MenuWindow extends Window {
 			}
 		});
 
-		restart = new TextButton("New Game", Assets.defultSkin);
+		restart = new TextButton("New Game", Assets.defaultSkin);
 		restart.addListener(new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y,
 					int pointer, int button) {
@@ -83,13 +84,18 @@ public class MenuWindow extends Window {
 
 		music = new ImageButton(Assets.musicOn, Assets.musicOff,
 				Assets.musicOff);
+		if (!Assets.musicSoundOn)
+			music.setChecked(true);
 		music.addListener(new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y,
 					int pointer, int button) {
 				if (music.isChecked()) {
 					Assets.music.play();
-				} else
+					Assets.musicSoundOn = true;
+				} else {
 					Assets.music.stop();
+					Assets.musicSoundOn = false;
+				}
 				return true;
 			}
 
@@ -100,16 +106,16 @@ public class MenuWindow extends Window {
 
 		soundFx = new ImageButton(Assets.soundFxOn, Assets.soundFxOff,
 				Assets.soundFxOff);
+		if (!Assets.fxSoundOn)
+			soundFx.setChecked(true);
 		soundFx.addListener(new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y,
 					int pointer, int button) {
 				if (!soundFx.isChecked()) {
-					Assets.correctVolume = 0;
-					Assets.wrongVolume = 0;
+					Assets.fxSoundOn = false;
 				} else {
-					Assets.correctVolume = 1;
-					Assets.wrongVolume = 1;
-					Assets.correct.play(Assets.correctVolume);
+					Assets.fxSoundOn = true;
+					Assets.correct.play(Assets.fxVolume);
 				}
 
 				return true;
@@ -121,7 +127,12 @@ public class MenuWindow extends Window {
 		});
 	}
 
-	/** Returns choice value */
+	/**
+	 * 0 == undecided <br>
+	 * 1 == restart level <br>
+	 * 2 == new game <br>
+	 * 3 == back to main menu
+	 * */
 	public int getchoice() {
 		switch (choice) {
 		case level:

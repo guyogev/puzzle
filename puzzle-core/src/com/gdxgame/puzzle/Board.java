@@ -21,10 +21,6 @@ public class Board{
 	private static Table bgTable, cellsTable;
 	private static ArrayList<Tile> tileBatch;
 
-	private Board() {
-	}
-	
-	
 	/** board background getter*/
 	public Table getBgTable() {
 		return bgTable;
@@ -41,7 +37,7 @@ public class Board{
 		for (Tile t : tileBatch) {
 			t.addAction(sequence(Actions.touchable(Touchable.disabled),
 					delay(freezeTime), Actions.touchable(Touchable.enabled)));
-			if (t.hiddenColor != Assets.hiddColor_red) {
+			if (t.hiddenColor != Assets.hiddColor_wrong) {
 				t.addAction(sequence(
 						Actions.color(t.hiddenColor, freezeTime / 5),
 						delay(3 * freezeTime / 5),
@@ -62,7 +58,7 @@ public class Board{
 		// board background
 		bgTable = new Table();
 		bgTable.setFillParent(true);
-		Button bgButtun = new Button(Assets.defultSkin);
+		Button bgButtun = new Button(Assets.defaultSkin);
 		bgButtun.setDisabled(true);
 		bgButtun.setColor(.9f, .8f, .7f, .5f);
 		bgTable.add(bgButtun).width(bgW).height(bgH);
@@ -85,22 +81,27 @@ public class Board{
 	
 	}
 
-	/** Returns ArrayList of red+green Tiles with random order */
-	private static ArrayList<Tile> createTileBatch(int red, int green) {
-		ArrayList<Tile> batch = new ArrayList<Tile>();
-		for (int i = 0; i < red; i++)
-			batch.add(new RedTile());
-		for (int i = 0; i < green; i++)
-			batch.add(new GreenTile());
-		Collections.shuffle(batch);
-		return batch;
-	}
-
-	public void reset() {
+	public void resetBoard() {
 		for (Tile t : tileBatch){
 			t.addAction(Actions.color(t.visibleColor,.3f));
 			t.setTouchable(Touchable.enabled);
 		}
+	}
+
+
+	private Board() {
+	}
+
+
+	/** Returns ArrayList of red+green Tiles with random order */
+	private static ArrayList<Tile> createTileBatch(int unColored, int colored) {
+		ArrayList<Tile> batch = new ArrayList<Tile>();
+		for (int i = 0; i < unColored; i++)
+			batch.add(new Tile());
+		for (int i = 0; i < colored; i++)
+			batch.add(new ColoredTile());
+		Collections.shuffle(batch);
+		return batch;
 	}
 
 }

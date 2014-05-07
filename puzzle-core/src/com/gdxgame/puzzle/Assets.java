@@ -1,8 +1,10 @@
 package com.gdxgame.puzzle;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
@@ -15,55 +17,99 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 /** Game resource repository */
 public class Assets {
 
-	public static Random rand;
-	public static Skin defultSkin;
-	public static TextureRegionDrawable tileTexture;
+	static Random rand;
+	static Preferences prefs = Gdx.app.getPreferences("Game Preferences");
+	static Skin defaultSkin;
 
-	static Color visibleColor, hiddenColor_green, hiddColor_red;
+	static Color visibleColor, hiddenColor_correct, hiddColor_wrong;
+	static ArrayList<Color> hiddenColors;
 
-	public static float board_cells_Width, board_cells_Heigth,board_Bg_Width, board_Bg_Heigth, w_unit, h_unit, screenWidth,
-			screenHeight, hudHeigth,bottomTableHeigth, correctVolume, wrongVolume;
+	static float board_cells_Width, board_cells_Heigth, board_Bg_Width,
+			board_Bg_Heigth, w_unit, h_unit, screenWidth, screenHeight,
+			hudHeigth, bottomTableHeigth, fxVolume;
 
-	public static Drawable musicOn, musicOff, soundFxOn, soundFxOff;
-	
-	public static Sound correct, wrong;
-	public static Music music;
+	static Drawable musicOn, musicOff, soundFxOn, soundFxOff, menuIcon;
 
-	public static void load() {
+	static Sound correct, wrong;
+	static Music music;
+
+	static int colorLimit, highScore;
+	static boolean fxSoundOn, musicSoundOn;
+
+	private static Texture t1, t2, t3, t4, t5;
+
+	static void load() {
+
 		rand = new Random();
+		loadPrefs();
 
 		screenWidth = Gdx.graphics.getWidth();
 		screenHeight = Gdx.graphics.getHeight();
 		w_unit = screenWidth / 9;
 		h_unit = Gdx.graphics.getHeight() / 16;
-		board_cells_Width = 8 * w_unit;
+		board_cells_Width = 7 * w_unit;
 		board_cells_Heigth = 9 * h_unit;
-		board_Bg_Width = board_cells_Width + w_unit/2;
-		board_Bg_Heigth = board_cells_Heigth + h_unit/2;
-		hudHeigth= bottomTableHeigth = 3.25f * h_unit;
+		board_Bg_Width = board_cells_Width + w_unit / 2;
+		board_Bg_Heigth = board_cells_Heigth + h_unit / 2;
+		hudHeigth = bottomTableHeigth = 3.25f * h_unit;
 
 		visibleColor = Color.GRAY;
-		hiddenColor_green = Color.GREEN;
-		hiddColor_red = Color.RED;
+		hiddenColor_correct = Color.GREEN;
+		hiddColor_wrong = Color.RED;
+		hiddenColors = new ArrayList<Color>();
+		hiddenColors.add(Color.ORANGE);
+		hiddenColors.add(Color.MAGENTA);
+		hiddenColors.add(Color.PINK);
 
-		defultSkin = new Skin(Gdx.files.internal("skin/uiskin.json"));
-		tileTexture = new TextureRegionDrawable(new TextureRegion(new Texture(
-				Gdx.files.internal("tile.png"))));
+		defaultSkin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
-		musicOn = new TextureRegionDrawable(new TextureRegion(new Texture(
-				Gdx.files.internal("gui/music_on.png"))));
-		musicOff = new TextureRegionDrawable(new TextureRegion(new Texture(
-				Gdx.files.internal("gui/music_off.png"))));
-		soundFxOn = new TextureRegionDrawable(new TextureRegion(new Texture(
-				Gdx.files.internal("gui/sound_fx_on.png"))));
-		soundFxOff = new TextureRegionDrawable(new TextureRegion(new Texture(
-				Gdx.files.internal("gui/sound_fx_off.png"))));
-		
+		t1 = new Texture(Gdx.files.internal("gui/music_on.png"));
+		musicOn = new TextureRegionDrawable(new TextureRegion(t1));
+		t2 = new Texture(Gdx.files.internal("gui/music_off.png"));
+		musicOff = new TextureRegionDrawable(new TextureRegion(t2));
+		t3 = new Texture(Gdx.files.internal("gui/sound_fx_on.png"));
+		soundFxOn = new TextureRegionDrawable(new TextureRegion(t3));
+		t4 = new Texture(Gdx.files.internal("gui/sound_fx_off.png"));
+		soundFxOff = new TextureRegionDrawable(new TextureRegion(t4));
+		t5 = new Texture(Gdx.files.internal("gui/menu.png"));
+		menuIcon = new TextureRegionDrawable(new TextureRegion(t5));
+
 		correct = Gdx.audio.newSound(Gdx.files.internal("sound/correct.wav"));
 		wrong = Gdx.audio.newSound(Gdx.files.internal("sound/wrong.wav"));
 		music = Gdx.audio.newMusic(Gdx.files.internal("sound/loop.mp3"));
-		correctVolume = 1;
-		wrongVolume = 1;
 
 	}
+
+	/** Load preferences from file */
+	private static void loadPrefs() {
+		musicSoundOn = prefs.getBoolean("musicSoundOn", true);
+		fxSoundOn = prefs.getBoolean("fxSoundOn", true);
+		fxVolume = prefs.getFloat("fxVolume", 1);
+		colorLimit = prefs.getInteger("colorLimit", 1);
+		highScore = prefs.getInteger("highScore", 0);
+	}
+
+	/** Save preferences from file */
+	private static void savePref() {
+		prefs.putBoolean("musicSoundOn", musicSoundOn);
+		prefs.putBoolean("fxSoundOn", fxSoundOn);
+		prefs.putFloat("fxVolume", fxVolume);
+		prefs.putInteger("colorLimit", colorLimit);
+		prefs.putInteger("highScore", highScore);
+		prefs.flush();
+	}
+
+	/**Free memory*/
+	public static void dispose() {
+		savePref();
+		t1.dispose();
+		t2.dispose();
+		t3.dispose();
+		t4.dispose();
+		t5.dispose();
+		correct.dispose();
+		wrong.dispose();
+		music.dispose();
+	}
+
 }

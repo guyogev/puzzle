@@ -13,6 +13,12 @@ public class Level {
 		reset();
 	}
 
+	public static Level init(){
+		if (level == null)
+			level = new Level();
+		return level;
+	}
+	
 	void reset() {
 		levelNumber = 0;
 		boardHeight = 2;
@@ -36,9 +42,7 @@ public class Level {
 		return coloredTiles;
 	}
 
-	public static Level next() {
-		if (level == null)
-			level = new Level();
+	public Level next() {
  		levelNumber++;
 		if ((double)coloredTiles / (boardHeight * boardWidth) < 0.5)
 			coloredTiles++;

@@ -1,24 +1,45 @@
 package com.gdxgame.puzzle;
 
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 
+/**Main game screen*/
 public class PlayScreen extends AbstractScreen {
 
-	private Level level;
-	private Board board;
-	private TopHud topHud;
-	private BottomHud bottomHud;
+	private static Level level;
+	private static Board board;
+	private static TopHud topHud;
+	private static BottomHud bottomHud;
 	// Arranges hud & buttons
 	private Table screenLayout;
 	// Holds only the board object.
 	private Stage boardStage;
 	private float FXdelta = .3f;
 	private MenuWindow menuWindow;
+	private InputMultiplexer inputMultiplexer;
+
+	@Override
+	public void show() {
+		Gdx.input.setInputProcessor(inputMultiplexer);
+		Assets.music.setLooping(true);
+		if (Assets.musicSoundOn)
+			Assets.music.play();
+		level = Level.init();
+		restartGame();
+	}
+
+	@Override
+	public void hide() {
+		Assets.music.stop();
+	}
 
 	public PlayScreen(Puzzle puzzle) {
 		game = puzzle;
@@ -26,12 +47,6 @@ public class PlayScreen extends AbstractScreen {
 		boardStage = new Stage(stage.getViewport(), stage.getSpriteBatch());
 		initInputProcessing();
 		initScreenLayout();
-
-		Assets.music.setLooping(true);
-		Assets.music.play();
-
-		// begin first level
-		nextLevelSetup();
 	}
 
 	@Override
@@ -60,10 +75,10 @@ public class PlayScreen extends AbstractScreen {
 
 	/** create & initialize input processors */
 	private void initInputProcessing() {
-		InputMultiplexer inputMultiplexer = new InputMultiplexer();
+		inputMultiplexer = new InputMultiplexer();
 		inputMultiplexer.addProcessor(stage);
 		inputMultiplexer.addProcessor(boardStage);
-		Gdx.input.setInputProcessor(inputMultiplexer);
+		// Gdx.input.setInputProcessor(inputMultiplexer);
 	}
 
 	/** create stage layout & fill with UI objects */
@@ -72,7 +87,7 @@ public class PlayScreen extends AbstractScreen {
 		screenLayout.setFillParent(true);
 		screenLayout.align(Align.top);
 
-		topHud = TopHud.getHud();
+		topHud = TopHud.getTopHud();
 		screenLayout.add(topHud).height(Assets.hudHeigth)
 				.width(Assets.screenWidth).top().row();
 
@@ -91,7 +106,7 @@ public class PlayScreen extends AbstractScreen {
 	/** set the board with new level */
 	private void nextLevelSetup() {
 		boardStage.clear();
-		level = Level.next();
+		level = level.next();
 		board = Board.getBoard(level.getBoardHeight(), level.getBoardWidth(),
 				level.getColoredTiles());
 		boardStage.addActor(board.getBgTable());
@@ -102,7 +117,19 @@ public class PlayScreen extends AbstractScreen {
 
 	/** Main game loop */
 	private void gameLoop() {
-		//level finished
+		// show menu
+		if (topHud.menuButtonPressed()) {
+			topHud.resetMenuButton();
+			if (!menuWindow.isTouchable()){
+				FX.showActor(menuWindow, FXdelta);
+				FX.hideActor(board.getCellsTable());
+			}
+			else{
+				FX.hideActor(menuWindow, FXdelta);
+				FX.showActor(board.getCellsTable());
+			}
+		}
+		// level finished
 		if (topHud.getTilesLeft() == 0 && !bottomHud.nextLevelButtonIsVisible())
 			bottomHud.showNextLevelButton();
 		switch (bottomHud.getchoice()) {
@@ -116,27 +143,38 @@ public class PlayScreen extends AbstractScreen {
 		default:
 			break;
 		}
-		//game over
-		if (topHud.getStrikesLeft() <= 0) {
-			if (!menuWindow.isTouchable())
-				FX.showActor(menuWindow, FXdelta);
+		// game over
+		if (topHud.getStrikesLeft() <= 0 && !menuWindow.isTouchable()){
+			FX.showActor(menuWindow, FXdelta);
+			FX.hideActor(board.getCellsTable());
+		}
+		if (menuWindow.isTouchable()) {
 			int choice = menuWindow.getchoice();
 			switch (choice) {
 			case 1:
+				menuWindow.resetChoice();
 				restartLevel();
+				FX.showActor(board.getCellsTable());
 				break;
 			case 2:
+				menuWindow.resetChoice();
 				restartGame();
+				FX.showActor(board.getCellsTable());
+				break;
 			case 3:
+				menuWindow.resetChoice();
 				backTMainMenu();
+				FX.showActor(board.getCellsTable());
+				break;
 			default:
 				break;
 			}
 		}
+
 	}
 
 	private void backTMainMenu() {
-		game.setScreen(new MenuScreen(game));
+		game.setScreen(game.menuScreen);
 		// dispose();
 	}
 
@@ -144,15 +182,42 @@ public class PlayScreen extends AbstractScreen {
 		level.reset();
 		topHud.resetHud();
 		nextLevelSetup();
-		menuWindow.resetChoice();
+
 	}
 
 	private void restartLevel() {
-		board.reset();
+		board.resetBoard();
 		bottomHud.showPatternButton();
 		topHud.resetStrikesLeft(1);
 		topHud.nextLevelSetup(level.getColoredTiles(), Level.getLevelNumber());
-		menuWindow.resetChoice();
 	}
 
+	public static void checkTile(Tile t) {
+		// correct
+		if (t.hiddenColor.equals(bottomHud.getChosenColor())) {
+			TopHud.updateHud(true);
+			t.setTouchable(Touchable.disabled);
+			t.addAction(Actions.color(Assets.hiddenColor_correct, .3f));
+			if (Assets.fxSoundOn)
+				Assets.correct.play(Assets.fxVolume);
+		}
+		// chose wrong color
+		else if (t.hiddenColor != t.visibleColor) {
+			TopHud.updateHud(false);
+			t.addAction(sequence(Actions.touchable(Touchable.disabled),
+					Actions.color(Assets.hiddColor_wrong, .7f),
+					Actions.color(t.visibleColor, .3f),
+					Actions.touchable(Touchable.enabled)));
+			if (Assets.fxSoundOn)
+				Assets.wrong.play(Assets.fxVolume);
+		}
+		// wrong
+		else {
+			TopHud.updateHud(false);
+			t.addAction(Actions.color(Assets.hiddColor_wrong, .3f));
+			if (Assets.fxSoundOn)
+				Assets.wrong.play(Assets.fxVolume);
+		}
+
+	}
 }
