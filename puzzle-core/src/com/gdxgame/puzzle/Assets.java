@@ -21,7 +21,8 @@ public class Assets {
 	static Preferences prefs = Gdx.app.getPreferences("Game Preferences");
 	static Skin defaultSkin;
 
-	static Color visibleColor, hiddenColor_correct, hiddColor_wrong;
+	static Color boardBgColor, TileVisibleColor, tileHiddenColor_correct,
+			tileHiddColor_wrong;
 	static ArrayList<Color> hiddenColors;
 
 	static float board_cells_Width, board_cells_Heigth, board_Bg_Width,
@@ -53,13 +54,14 @@ public class Assets {
 		board_Bg_Heigth = board_cells_Heigth + h_unit / 2;
 		hudHeigth = bottomTableHeigth = 3.25f * h_unit;
 
-		visibleColor = Color.GRAY;
-		hiddenColor_correct = Color.GREEN;
-		hiddColor_wrong = Color.RED;
+		boardBgColor = new Color(.302f, .302f, .302f, .8f);
+		TileVisibleColor = new Color(1, 1, 1, 1);
+		tileHiddenColor_correct = new Color(0.384f, 1, 0, 1);
+		tileHiddColor_wrong = new Color(1, .271f, 0, 1);
 		hiddenColors = new ArrayList<Color>();
-		hiddenColors.add(Color.ORANGE);
-		hiddenColors.add(Color.MAGENTA);
-		hiddenColors.add(Color.PINK);
+		hiddenColors.add(new Color(1, 0.969f, 0, 1));
+		hiddenColors.add(new Color(0.451f, 0.686f, 0.902f, 1));
+		hiddenColors.add(new Color(1, 0.467f, 0, 1));
 
 		defaultSkin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
@@ -99,15 +101,15 @@ public class Assets {
 		prefs.flush();
 	}
 
-	/**Free memory*/
+	/** Free memory */
 	public static void dispose() {
 		savePref();
-		t1.dispose();
+/*		t1.dispose();
 		t2.dispose();
 		t3.dispose();
 		t4.dispose();
 		t5.dispose();
-		correct.dispose();
+*/		correct.dispose();
 		wrong.dispose();
 		music.dispose();
 	}

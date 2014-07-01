@@ -37,7 +37,7 @@ public class Board{
 		for (Tile t : tileBatch) {
 			t.addAction(sequence(Actions.touchable(Touchable.disabled),
 					delay(freezeTime), Actions.touchable(Touchable.enabled)));
-			if (t.hiddenColor != Assets.hiddColor_wrong) {
+			if (t.hiddenColor != Assets.tileHiddColor_wrong) {
 				t.addAction(sequence(
 						Actions.color(t.hiddenColor, freezeTime / 5),
 						delay(3 * freezeTime / 5),
@@ -60,7 +60,7 @@ public class Board{
 		bgTable.setFillParent(true);
 		Button bgButtun = new Button(Assets.defaultSkin);
 		bgButtun.setDisabled(true);
-		bgButtun.setColor(.9f, .8f, .7f, .5f);
+		bgButtun.setColor(Assets.boardBgColor);
 		bgTable.add(bgButtun).width(bgW).height(bgH);
 	
 		// board cells

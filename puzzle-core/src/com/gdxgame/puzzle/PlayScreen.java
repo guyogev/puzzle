@@ -51,7 +51,7 @@ public class PlayScreen extends AbstractScreen {
 
 	@Override
 	public void render(float delta) {
-		Gdx.gl.glClearColor(.1f, .1f, .1f, .5f);
+		Gdx.gl.glClearColor(.702f, .702f, .702f, 1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		gameLoop();
 		boardStage.act(Gdx.graphics.getDeltaTime());
@@ -197,7 +197,7 @@ public class PlayScreen extends AbstractScreen {
 		if (t.hiddenColor.equals(bottomHud.getChosenColor())) {
 			TopHud.updateHud(true);
 			t.setTouchable(Touchable.disabled);
-			t.addAction(Actions.color(Assets.hiddenColor_correct, .3f));
+			t.addAction(Actions.color(Assets.tileHiddenColor_correct, .3f));
 			if (Assets.fxSoundOn)
 				Assets.correct.play(Assets.fxVolume);
 		}
@@ -205,7 +205,7 @@ public class PlayScreen extends AbstractScreen {
 		else if (t.hiddenColor != t.visibleColor) {
 			TopHud.updateHud(false);
 			t.addAction(sequence(Actions.touchable(Touchable.disabled),
-					Actions.color(Assets.hiddColor_wrong, .7f),
+					Actions.color(Assets.tileHiddColor_wrong, .7f),
 					Actions.color(t.visibleColor, .3f),
 					Actions.touchable(Touchable.enabled)));
 			if (Assets.fxSoundOn)
@@ -214,7 +214,7 @@ public class PlayScreen extends AbstractScreen {
 		// wrong
 		else {
 			TopHud.updateHud(false);
-			t.addAction(Actions.color(Assets.hiddColor_wrong, .3f));
+			t.addAction(Actions.color(Assets.tileHiddColor_wrong, .3f));
 			if (Assets.fxSoundOn)
 				Assets.wrong.play(Assets.fxVolume);
 		}

@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 
@@ -21,6 +22,14 @@ public class MenuScreen extends AbstractScreen {
 		stage.addActor(layout);
 		game.playScreen = new PlayScreen(game);
 
+		String text = "How to play:\n"
+				+ "this is a match memory game.\n"
+				+ "Hit 'show pattern' when ready. A pattern will appear for a short time, memories colored tiles possision\n."
+				+ "Recreate the pattern. Use bottom button to toggle colors.\n\n"
+				+ "Select difficulty:";
+		Label instructions = new Label(text, Assets.defaultSkin);	
+		instructions.setWrap(true);
+		
 		TextButton easy = new TextButton("easy (one color)",Assets.defaultSkin);
 		easy.addListener(new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y,
@@ -62,7 +71,8 @@ public class MenuScreen extends AbstractScreen {
 					int pointer, int button) {
 			}
 		});
-
+		
+		layout.add(instructions).left().width(8 * Assets.w_unit).row();
 		layout.add(easy).width(6 * Assets.w_unit).height(Assets.h_unit)
 				.pad(Assets.h_unit / 4).row();
 		layout.add(medium).width(6 * Assets.w_unit).height(Assets.h_unit)
@@ -74,7 +84,7 @@ public class MenuScreen extends AbstractScreen {
 
 	@Override
 	public void render(float delta) {
-		Gdx.gl.glClearColor(.1f, .1f, .1f, .5f);
+		Gdx.gl.glClearColor(.702f, .702f, .702f, 1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		stage.act(Gdx.graphics.getDeltaTime());
 		stage.draw();

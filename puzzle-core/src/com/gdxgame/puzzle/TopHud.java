@@ -95,27 +95,27 @@ public class TopHud extends Table {
 		add(levelNumberLabel).padLeft(Assets.w_unit / 2)
 				.width(4 * Assets.w_unit).row();
 		// tilesLeftDisp
-		tilesLeftDisp = new TextButton("" + tilesLeft, Assets.defaultSkin);
+		tilesLeftDisp = new TextButton("Tiles Left: " + tilesLeft, Assets.defaultSkin);
 		tilesLeftDisp.setTouchable(Touchable.disabled);
-		tilesLeftDisp.setColor(Assets.hiddenColor_correct);
-		add(tilesLeftDisp).padTop(Assets.w_unit / 4).width(2 * Assets.w_unit);
+		tilesLeftDisp.setColor(Assets.tileHiddenColor_correct);
+		add(tilesLeftDisp).padTop(Assets.w_unit / 4).width(2.3f * Assets.w_unit);
 		// striksDisp
-		striksDisp = new TextButton("" + strikesLeft, Assets.defaultSkin);
+		striksDisp = new TextButton("Striks: " + strikesLeft, Assets.defaultSkin);
 		striksDisp.setTouchable(Touchable.disabled);
-		striksDisp.setColor(Assets.hiddColor_wrong);
+		striksDisp.setColor(Assets.tileHiddColor_wrong);
 		add(striksDisp).padTop(Assets.w_unit / 4).width(2 * Assets.w_unit);
 	}
 
 	/** Set tilesLeft & update display */
 	private static void setTilesLeft(int tilesLeft) {
 		TopHud.tilesLeft = tilesLeft;
-		tilesLeftDisp.setText("" + tilesLeft);
+		tilesLeftDisp.setText("Tiles Left: " + tilesLeft);
 	}
 
 	/** Set strikesLeft & update display */
 	private static void setStrikesLeft(int strikes) {
 		strikesLeft = strikes;
-		striksDisp.setText("" + strikesLeft);
+		striksDisp.setText("Striks: " + strikesLeft);
 	}
 
 	/** Set score & update display */

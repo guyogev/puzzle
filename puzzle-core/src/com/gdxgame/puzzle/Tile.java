@@ -11,7 +11,7 @@ public class Tile extends Button {
 
 	public Tile() {
 		super(Assets.defaultSkin);
-		hiddenColor = visibleColor = Assets.visibleColor;
+		hiddenColor = visibleColor = Assets.TileVisibleColor;
 		setColor(visibleColor);
 		final Tile t = this;
 		addListener(new InputListener() {
